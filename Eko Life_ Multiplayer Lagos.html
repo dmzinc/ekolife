@@ -1,0 +1,482 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Eko Life: Live in Lagos</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;--pn:rgba(14,16,18,.86);--y:#f5b800;--t:#fff;--bg:#87c0e8}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1020}}
+:root[data-theme="dark"]{--bg:#0b1020}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--bg);font-family:Archivo,system-ui,sans-serif;color:var(--t)}
+canvas{position:fixed;inset:0;width:100%;height:100%;touch-action:none;display:block}
+#hud{position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 8px);display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;pointer-events:none;font-size:13px}
+#hud div{background:var(--pn);border-radius:8px;padding:5px 8px}
+#hud b{display:block;font-size:11px;color:#aaa;font-weight:500}
+.bar{height:6px;background:#333;border-radius:3px;margin-top:3px;overflow:hidden}.bar i{display:block;height:100%;background:var(--y)}
+#toast{position:fixed;left:50%;top:38%;transform:translateX(-50%);background:var(--pn);padding:8px 14px;border-radius:8px;font-weight:700;display:none;text-align:center;max-width:90%}
+#go{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);display:none}
+button{font:800 15px Archivo,system-ui,sans-serif;border:0;border-radius:8px;padding:12px 16px;background:var(--y);color:#111;cursor:pointer}
+button.x{background:#444;color:#fff}
+button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+#menu,#end{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px}
+#box,#em{background:var(--pn);border:2px solid var(--y);border-radius:12px;padding:16px;max-width:380px;width:100%;text-align:center}
+#box h2{margin:0 0 6px}#box p{margin:0 0 12px;color:#ccc;font-size:14px}
+#ma{display:grid;gap:8px}
+#joy{position:fixed;left:18px;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.18);display:none;touch-action:none}
+#joy i{position:absolute;left:40px;top:40px;width:40px;height:40px;border-radius:50%;background:rgba(245,184,0,.85)}
+@media(pointer:coarse){#joy{display:block}}
+#help{position:fixed;left:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 4px);font-size:11px;opacity:.8;pointer-events:none}
+@media(pointer:coarse){#help{display:none}}
+#cc{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px;z-index:5}
+#box2{background:var(--pn);border:2px solid var(--y);border-radius:12px;padding:16px;max-width:360px;width:100%;text-align:center}
+#box2 h2{margin:0 0 4px}#box2 p{margin:6px 0;color:#ccc;font-size:13px}
+#nm,#ci{width:100%;padding:10px;border-radius:8px;border:2px solid #444;background:#111;color:#fff;font:600 15px Archivo,system-ui,sans-serif;margin:8px 0}
+#sw{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
+button.sw{width:34px;height:34px;padding:0;border-radius:50%;border:3px solid #fff}
+#side{position:fixed;right:8px;top:calc(env(safe-area-inset-top,0px) + 120px);width:150px;font-size:11px;display:grid;gap:6px}
+#lb,#pp{background:var(--pn);border-radius:8px;padding:6px 8px}
+#pp button{padding:3px 6px;font-size:11px;margin-top:3px}
+#chat{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 8px);width:min(340px,40vw);font-size:12px}
+#cl{background:var(--pn);border-radius:8px;padding:2px 8px}#ci{margin:4px 0 0;padding:6px 8px;font-size:13px}
+#hb{position:fixed;left:8px;top:calc(env(safe-area-inset-top,0px) + 118px);padding:8px 12px}
+#gd{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:14px;z-index:6}
+#gb{background:var(--pn);border:2px solid var(--y);border-radius:12px;padding:16px;max-width:440px;width:100%;max-height:90%;overflow:auto;font-size:14px;line-height:1.45}
+#gb h2{margin:0 0 8px}#gb h3{margin:12px 0 4px;font-size:15px;color:var(--y)}#gb p,#gb ul{margin:0 0 4px;color:#ddd}#gb ul{padding-left:18px}
+#dv{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 118px);background:var(--pn);padding:6px 12px;border-radius:8px;font-size:12px;display:none;white-space:nowrap}
+#mm{position:fixed;left:8px;top:calc(env(safe-area-inset-top,0px) + 164px);width:130px;height:130px;border:2px solid var(--y);border-radius:10px;cursor:pointer;z-index:2}#mm.big{width:min(300px,86vw);height:min(300px,86vw)}
+#hk{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 84px);display:none}
+#box{max-height:92vh;overflow:auto}
+#toast{z-index:9}@keyframes pop{0%{transform:translateX(-50%) scale(.6);opacity:0}60%{transform:translateX(-50%) scale(1.08);opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
+#hud .bar{height:9px}
+</style></head><body>
+<div id="hud"></div><div id="toast"></div><button id="go"></button><div id="joy"><i></i></div>
+<div id="help">WASD / arrows to walk · drag to look · E to interact</div>
+<div id="cc"><div id="box2"><h2>Welcome to Lagos</h2><p>Create your character</p><input id="nm" maxlength="16" placeholder="Your name" aria-label="Your name"><div id="sw"></div><div id="sk" style="display:flex;gap:10px;justify-content:center;margin-bottom:10px"></div><button id="cb">Enter Lagos</button><p id="mode"></p></div></div>
+<div id="side"><div id="lb">Richest in Lagos</div><div id="pp">Nearby players</div></div>
+<div id="chat"><div id="cl"></div><input id="ci" maxlength="80" placeholder="Chat with Lagos" aria-label="Chat"></div>
+<button id="hb" onclick="S.menu='gd';$('gd').style.display='flex'" aria-label="How to make money">? Money guide</button>
+<div id="dv"></div>
+<canvas id="mm" width="300" height="300" aria-label="Map"></canvas>
+<button id="hk" onclick="if(near)show(near)">Buy from hawker</button>
+<div id="gd"><div id="gb"><h2>How to make money in Lagos</h2>
+<h3>1. Work every day</h3><ul><li><b>Yaba Tech Hub:</b> about ₦9,000 for 4h. Best pay per hour, open 9am to 5pm, so start by 1pm.</li><li><b>Danfo Park:</b> walk up to any danfo (parked at the start plaza and Danfo Park, or driving past) and press E to hop in. Pay ₦1,000 daily remittance to the owner. Pick up at the yellow marker, drop off at the green one. Longer trips pay more, and rush hour (7-10am, 4-7pm) pays 40% more. Or ride as conductor for about ₦5,000 per 3h.</li><li><b>Oshodi Market:</b> about ₦3,500 for 2h, any time. Good when the Hub is closed.</li><li><b>Skill:</b> repeating the same job raises its pay by 3% each time, up to +45%.</li></ul>
+<h3>2. Keep costs low</h3><ul><li>Food is about ₦3,000 a day. Eat at Mama Put (inside or roadside) or buy snacks from street hawkers at Danfo Park and on the roads: gala ₦300, pure water ₦100, suya ₦1,000. Hawkers also sell to your danfo window.</li><li>Look before you cross! A danfo will knock you down and General Hospital charges ₦2,500 (or buy health insurance there).</li><li>Tap the map on the left to enlarge it: 🏠 home, 💼 work, 🚌 danfo park, 🍲 Mama Put, 🏥 hospital, and the plots for sale.</li><li>Rent ₦15,000 every 7 days. Light ₦2,500 for 3 days.</li><li>Watch the <b>Hunger</b> and <b>Tiredness</b> bars at the top. Eat to fill Hunger. Tiredness builds slowly as you work, so sleep at home to rest. When you are very tired you earn 20% less, but you never faint. You can't work when starving, and buy light before you sleep or the night is bad.</li><li>Your cash shows a small green or red change next to it, so you can always see where money came from or went.</li></ul>
+<h3>3. Buy land, build, earn while you sleep</h3><ul><li>Plots start at ₦40,000 (Makoko). Each plot holds 2 to 6 houses (pricier plots hold more). Build them one at a time for 30% of the plot price, whenever you have the cash.</li><li>Every house pays you 2% of the plot price each day (buildings 2.5%, double with a colour set) and ends your rent.</li><li>First player to buy a plot owns it, so move fast.</li><li><b>Colour sets:</b> own both plots in a pair (Makoko+Ikorodu, Ajah+Lekki, Ikoyi+Banana Island) and both houses pay double.</li><li><b>Rent, like Monopoly:</b> when you step onto another player's land, house or building (their block), you pay them rent: about 1.5% of the price plus 1% per house. It is charged once per visit (every 2 minutes) and goes straight to them.</li><li><b>Lagos Gist:</b> each new day can bring a surprise, good or bad, like Chance cards. It can even be a Task Force raid or a Get Out of Jail Free card.</li><li><b>More to buy:</b> 8 buildings (markets, shops, malls, apartments) join the 6 plots. Colour sets work for all pairs, and you can sell any property back for half its price.</li><li><b>Police and jail:</b> drive over about 40 km/h near a police car, or ignore your tax bill, and you go to jail. Bail is ₦5,000 at the cell menu (press E), or serve 12 hours.</li><li><b>Bus stops:</b> passengers wait at the 🚏 bus stops (see the map). Drive to the yellow marker, slow down to stop, then take them to the green stop. Longer trips pay more.</li><li><b>Okada:</b> ride one from Danfo Park or the start plaza (₦700 a day). It is faster and squeezes through gaps and pays 25% more per trip, but you can run into things and police care about speed. Watch out for okada riders on the road: they are rough, they weave, and they will knock you down.</li><li><b>Tax:</b> FIRS bills 3% of your net worth every 7 days. Pay at the Tax Office.</li><li><b>Owambe Ground:</b> a free meal once a day, like Free Parking.</li></ul>
+<h3>4. Plan for your first week</h3><p>Work two Tech Hub shifts (9am and 1pm), eat twice at Mama Put, sleep at home. You start with ₦50,000, so you can buy Makoko (₦40,000) on day one, then save ₦20,000 to build its house. After that, reinvest in a bigger plot.</p>
+<div style="margin-top:12px"><button onclick="S.menu=0;$('gd').style.display='none'">Got it</button></div></div></div>
+<div id="menu"><div id="box"><h2 id="mt"></h2><p id="md"></p><div id="ma"></div></div></div>
+<div id="end"><div id="em"><h2 id="et"></h2><p id="ed"></p><button onclick="location.reload()">Start a new life</button></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const f=n=>"₦"+Math.round(n).toLocaleString("en-NG");
+var STOPS=[],okadas=[];
+const S={min:7*60,day:1,cash:50000,hunger:80,energy:90,pw:2,over:0,menu:0};
+const hr=()=>(S.min%1440)/60;
+const PL=[["Makoko",40000,-60,60],["Ikorodu",70000,60,60],["Ajah",110000,-60,-60],["Lekki",180000,60,-60],["Ikoyi",300000,0,-60],["Banana Island",500000,60,0]].concat([["Balogun Market Block",60000,-60,30,0xc0504d,4,11,9],["Alaba Electronics Plaza",120000,-60,-30,0x4a6fa5,7,10,9],["Mushin Apartments",90000,-30,60,0xd9c9a3,9,9,9],["Surulere Shopping Complex",200000,0,-30,0xb5651d,8,11,9],["Computer Village Shop",150000,-30,-60,0x3b8ea5,6,10,8],["Ikeja City Mall",260000,30,60,0xe0e0e0,7,12,10],["Ajah Business Park",280000,60,-30,0x7a8fa6,10,10,9],["Oniru Estate Flats",350000,60,30,0xf0e0c8,12,10,9]]).map(a=>({n:a[0],p:a[1],x:a[2],z:a[3],st:0,pl:1,b:a[4]?{c:a[4],h:a[5],w:a[6],d:a[7]}:0}));
+const L=[{n:"Your room (Mushin)",x:-30,z:30,c:0x9a6b4a,h:5,k:"home"},{n:"Mama Put",x:0,z:30,c:0xd9822b,h:4,k:"food"},{n:"Oshodi Market",x:30,z:0,c:0x2e9e5b,h:4,k:"mkt"},{n:"Yaba Tech Hub",x:-30,z:-30,c:0x4f7fd9,h:12,k:"tech"},{n:"Danfo Park",x:30,z:-30,c:0xf5b800,h:3,k:"danfo"},{n:"NEPA Office",x:-60,z:0,c:0x888e94,h:6,k:"nepa"},{n:"General Hospital",x:30,z:30,c:0xe9edef,h:8,k:"hosp"},{n:"Police Station",x:-30,z:-5.5,c:0x2c4a7a,h:5,k:"police",w:12,d:6,hf:4},{n:"FIRS Tax Office",x:0,z:60,c:0x6b705c,h:7,k:"tax"},{n:"Owambe Ground",x:30,z:-60,c:0xd35fa5,h:3,k:"owambe"}];
+let R;try{R=new THREE.WebGLRenderer({antialias:true,alpha:true})}catch(e){document.body.innerHTML="<p style='padding:20px'>WebGL isn't available in this browser.</p>";throw e}
+R.setPixelRatio(Math.min(devicePixelRatio,2));document.body.prepend(R.domElement);
+const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(55,1,.1,260);sc.fog=new THREE.Fog(0x87c0e8,50,150);
+const hemi=new THREE.HemisphereLight(0xffffff,0x445566,1),sun=new THREE.DirectionalLight(0xfff0d0,.9);sun.position.set(30,50,20);sc.add(hemi,sun);
+const box=(w,h,d,c)=>new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c}));
+const col=[];
+function facade(len,h,c){const K=Math.round(len)+"_"+Math.round(h)+"_"+c,C=facade.c||(facade.c={});if(C[K])return C[K];
+ const S=24,cw=Math.max(64,Math.round(len*S)),ch=Math.max(64,Math.round(h*S)),cv=document.createElement("canvas");cv.width=cw;cv.height=ch;const g=cv.getContext("2d");
+ g.fillStyle="#"+new THREE.Color(c).getHexString();g.fillRect(0,0,cw,ch);
+ for(let i=0;i<30;i++){g.fillStyle="rgba(0,0,0,"+Math.random()*.07+")";g.fillRect(Math.random()*cw,0,2+Math.random()*5,ch)}
+ g.fillStyle="rgba(0,0,0,.18)";g.fillRect(0,ch-6,cw,6);
+ const rows=Math.max(1,Math.round(h/3.1)),cols=Math.max(1,Math.floor(len/2.7)),fh=ch/rows,fw=cw/cols;
+ for(let r=0;r<rows;r++){g.fillStyle="rgba(0,0,0,.12)";g.fillRect(0,ch-r*fh-3,cw,3);
+  for(let q=0;q<cols;q++){const cx=(q+.5)*fw,cy=ch-(r+.55)*fh;
+   if(r==0&&q==(cols>>1)){g.fillStyle="#4a3426";g.fillRect(cx-.5*S,ch-2.3*S,S,2.3*S);g.fillStyle="#d9b25f";g.fillRect(cx+.25*S,ch-1.2*S,.12*S,.12*S);continue}
+   g.fillStyle="#e9e4d8";g.fillRect(cx-.62*S,cy-.72*S,1.24*S,1.44*S);
+   g.fillStyle=Math.random()<.25?"#f6dc92":"#26333f";g.fillRect(cx-.5*S,cy-.6*S,S,1.2*S);
+   g.fillStyle="rgba(255,255,255,.15)";g.fillRect(cx-.5*S,cy-.6*S,.45*S,1.2*S);
+   g.fillStyle="#3b3f42";g.fillRect(cx-.02*S,cy-.6*S,.04*S,1.2*S)}}
+ return C[K]=new THREE.CanvasTexture(cv)}
+function bld(x,z,w,d,h,c,o){o=o||{};const g=new THREE.Group(),mw=new THREE.MeshLambertMaterial({map:facade(w,h,c)}),md=new THREE.MeshLambertMaterial({map:facade(d,h,c)}),mr=new THREE.MeshLambertMaterial({color:0x585c60});
+ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),[md,md,mr,mr,mw,mw]);m.position.y=h/2;g.add(m);let roof;
+ if(!o.flat&&h<8){const r=(d+.8)/1.732,Hp=Math.min(2.2,.6+d*.2);roof=new THREE.Mesh(new THREE.CylinderGeometry(r,r,w+.8,3,1,false,-Math.PI/6,Math.PI*2),new THREE.MeshLambertMaterial({color:o.roof||[0x9aa1a6,0x8a5a3a,0x6d7479][Math.random()*3|0]}));roof.rotation.z=Math.PI/2;roof.scale.x=Hp/(1.5*r);roof.position.y=h+.5*r*roof.scale.x}
+ else{roof=new THREE.Mesh(new THREE.BoxGeometry(w+.3,.4,d+.3),new THREE.MeshLambertMaterial({color:o.roof||0x6b6f72}));roof.position.y=h+.2;
+  if(Math.random()<.6){const t=new THREE.Mesh(new THREE.CylinderGeometry(.6,.6,1.3,10),new THREE.MeshLambertMaterial({color:0x1d2b36}));t.position.set(w/2-1,h+1,d/2-1);g.add(t)}}
+ g.add(roof);g.userData.roof=roof;g.position.set(x,0,z);sc.add(g);col.push([x,z,w/2,d/2]);return g}
+function house(p){const k=PL.indexOf(p),D=[[6,6,3.2],[7,7,3.6],[7.5,7,4],[8,7,6.4],[9,7.5,5.5],[10,8,9]][k],C=[0x8fbf9f,0xe3d3b1,0xd7b59a,0xf0e6d6,0xcfd8dc,0xf5efe6][k];return bld(p.x,p.z,D[0],D[1],D[2],C,{flat:k==4})}
+function landTex(){if(landTex.t)return landTex.t;const c=document.createElement("canvas");c.width=c.height=256;const g=c.getContext("2d");g.fillStyle="#b99a6b";g.fillRect(0,0,256,256);
+ for(let i=0;i<1800;i++){g.fillStyle=`rgba(${80+Math.random()*80|0},${70+Math.random()*60|0},${40+Math.random()*30|0},.35)`;g.fillRect(Math.random()*256,Math.random()*256,2+Math.random()*3,2+Math.random()*3)}
+ for(let i=0;i<70;i++){g.fillStyle="rgba(70,120,50,.7)";g.fillRect(Math.random()*256,Math.random()*256,3,6+Math.random()*6)}return landTex.t=new THREE.CanvasTexture(c)}
+function landPlot(p){const m=new THREE.Mesh(new THREE.PlaneGeometry(13.6,13.6),new THREE.MeshLambertMaterial({map:landTex()}));m.rotation.x=-Math.PI/2;m.position.set(p.x,.22,p.z);sc.add(m);p.mk=m;
+ const wm=new THREE.MeshLambertMaterial({color:0xcfcac0}),wall=(cx,cz,w,d)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(w,1.1,d),wm);q.position.set(p.x+cx,.75,p.z+cz);sc.add(q);col.push([p.x+cx,p.z+cz,w/2,d/2])};
+ wall(0,-6.9,14,.3);wall(-6.9,0,.3,14);wall(6.9,0,.3,14);wall(-4.3,6.9,5.4,.3);wall(4.3,6.9,5.4,.3);
+ [-1.7,1.7].forEach(x=>{const q=new THREE.Mesh(new THREE.BoxGeometry(.5,1.7,.5),wm);q.position.set(p.x+x,.95,p.z+6.9);sc.add(q)});
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,4,6),new THREE.MeshLambertMaterial({color:0x6b4a2f}));pole.position.set(p.x,2.2,p.z);sc.add(pole);p.pole=pole}
+function sign(t,x,y,z,k){const c=document.createElement("canvas");c.width=256;c.height=96;const g=c.getContext("2d");g.fillStyle="rgba(14,16,18,.88)";g.fillRect(0,0,256,96);g.fillStyle="#f5b800";g.textAlign="center";g.font="bold 30px Arial";t.split("|").forEach((s,i)=>g.fillText(s,128,38+i*36));
+ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c)}));s.scale.set(5.2*(k||1),1.95*(k||1),1);s.position.set(x,y,z);sc.add(s);return s}
+const gr=box(260,.1,260,0x2f3438);gr.position.y=-.05;sc.add(gr);
+const used=new Set(["0,0"]);[...L,...PL].forEach(o=>used.add(Math.round(o.x/30)+","+Math.round(o.z/30)));
+for(let i=-2;i<=2;i++)for(let j=-2;j<=2;j++){const s=box(22,.2,22,0xb8b3a5);s.position.set(i*30,.1,j*30);sc.add(s);
+ if(!used.has(i+","+j))for(let n=0;n<3;n++){const w=4+Math.random()*3,h=4+Math.random()*10;bld(i*30+(n-1)*7,j*30+(Math.random()-.5)*10,w,w,h,[0x8d9aa3,0xb8a58f,0x7a8f9a,0xa0807a][Math.random()*4|0])}}
+L.forEach(s=>{s.half=s.hf||6;bld(s.x,s.z,s.w||12,s.d||12,s.h,s.c);sign(s.n,s.x,s.h+3,s.z)});
+PL.forEach(p=>{p.half=7;p.b?estate(p):landPlot(p);p.sg=sign("FOR SALE|"+p.n+" "+f(p.p),p.x,p.b?p.b.h+3:4,p.z)});
+const upd=p=>{p.mk.material.color.setHex(p.st?0x2e9e5b:0xc9a66b);if(p.st==2&&!p.hs)p.hs=bld(p.x,p.z,8,8,6,0x2e9e5b)};
+const danfos=[];for(let n=0;n<6;n++){const g=mkDanfo();sc.add(g);
+ const hz=n%2==0;danfos.push({g,hz,ln:[-45,-15,15,45][n%4]+(hz?3:-3),t:Math.random()*160-80,sp:7+Math.random()*4,d:n<3?1:-1})}
+const pl=new THREE.Group(),pm=new THREE.MeshLambertMaterial({color:0x0a8a4f});
+const b1=new THREE.Mesh(new THREE.CylinderGeometry(.35,.45,1.2,12),pm),b2=new THREE.Mesh(new THREE.SphereGeometry(.35,12,10),new THREE.MeshLambertMaterial({color:0x8a5a3a}));b1.position.y=.6;b2.position.y=1.5;pl.add(b1,b2);pl.position.set(0,0,8);sc.add(pl);
+let yaw=0,pit=.6,keys={},joy={x:0,y:0},dg=null,fr=0;
+addEventListener("keydown",e=>{keys[e.key.toLowerCase()]=1;if(e.key=="e"||e.key=="Enter")inter()});addEventListener("keyup",e=>keys[e.key.toLowerCase()]=0);
+const cv=R.domElement;cv.addEventListener("pointerdown",e=>{dg=[e.clientX,e.clientY];cv.setPointerCapture(e.pointerId)});
+cv.addEventListener("pointermove",e=>{if(!dg)return;yaw-=(e.clientX-dg[0])*.006;pit=Math.min(1.2,Math.max(.25,pit+(e.clientY-dg[1])*.004));dg=[e.clientX,e.clientY]});
+["pointerup","pointercancel"].forEach(t=>cv.addEventListener(t,()=>dg=null));
+const jy=$("joy"),kn=jy.firstElementChild;let ja=0;
+jy.addEventListener("pointerdown",e=>{ja=1;jy.setPointerCapture(e.pointerId);jm(e)});jy.addEventListener("pointermove",e=>{if(ja)jm(e)});
+["pointerup","pointercancel"].forEach(t=>jy.addEventListener(t,()=>{ja=0;joy={x:0,y:0};kn.style.transform=""}));
+function jm(e){const r=jy.getBoundingClientRect();let x=(e.clientX-r.left-60)/50,y=(e.clientY-r.top-60)/50;const l=Math.hypot(x,y);if(l>1){x/=l;y/=l}joy={x,y};kn.style.transform=`translate(${x*40}px,${y*40}px)`}
+function rs(){R.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}addEventListener("resize",rs);rs();
+const toast=m=>{const t=$("toast");t.textContent=m;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display="none",2600)};
+function tick(m){S.min+=m;const h=m/60;S.hunger=Math.max(0,S.hunger-3.2*h);S.energy=Math.max(15,S.energy-1.6*h);
+ const d=Math.floor(S.min/1440)+1;while(S.day<d&&!S.over){S.day++;daily()}
+ if(S.energy<=0&&!S.over){S.energy=40;S.cash-=2000;S.min+=360;toast("You fainted from exhaustion. Hospital bill: ₦2,000");S.menu=0;$("menu").style.display="none"}}
+let myId="solo";const built=()=>PL.filter(p=>p.st==2&&p.o===myId);
+function daily(){S.pw=Math.max(0,S.pw-1);const inc=built().reduce((a,p)=>a+(p.b?p.p*.025:p.p*.02*(p.h||0))*(set(p)?2:1),0);if(inc){S.cash+=inc;toast("Tenants paid you "+f(inc))}
+ if(S.day%7==0&&!built().length){S.cash-=15000;toast("Rent day: ₦15,000 paid");if(S.cash<0)fin("Evicted","You couldn't pay your rent. Build a house on your own land next time.")}
+ if(S.pw==0)toast("NEPA took light! Buy prepaid units.")}
+function adv(h){const n=Math.ceil(h*4);for(let i=0;i<n;i++)tick(h*60/n)}
+function fin(t,d){S.over=1;S.menu=0;$("menu").style.display="none";$("et").textContent=t;$("ed").textContent=d;$("end").style.display="flex"}
+function spend(c,msg,fn){if(S.cash<c)return toast("Not enough cash");S.cash-=c;fn();toast(msg)}
+function work(h,pay,en,msg,ok){if(ok===false)return toast("Not open now");if(S.hunger<10)return toast("Too hungry to work. Eat first.");const sk=(S.sk=S.sk||{}),lv=sk[msg]||0;sk[msg]=lv+1;const hh=hr(),rush=msg=="Fares collected!"&&((hh>=7&&hh<10)||(hh>=16&&hh<19));const p=Math.round(pay*(.85+Math.random()*.3)*(1+.03*Math.min(15,lv))*(rush?1.4:1)*(S.energy<30?.8:1));adv(h);S.energy=Math.max(10,S.energy-en);S.cash+=p;toast(msg+" +"+f(p)+(rush?" (rush hour!)":"")+(S.energy<30?" · tired, -20% pay":"")+(lv>=1?" · skill +"+Math.min(45,lv*3)+"%":""))}
+function eat(c,v,h){spend(c,"Delicious! Hunger restored.",()=>{adv(h);S.hunger=Math.min(100,S.hunger+v)})}
+function sleep(h){const r=S.pw>0?14:8;adv(h);S.energy=Math.min(100,S.energy+h*r);toast(S.pw>0?"You slept well.":"No light, hot night. You slept badly.")}
+function menuOf(o){const a=[];
+ if(o.pl){a.push(o.st==0?[`Buy plot ${f(o.p)}`,()=>spend(o.p,"Plot is yours!",()=>{o.st=1;upd(o)})]:o.st==1?[`Build house ${f(o.p/2)}`,()=>spend(o.p/2,"House built!",()=>{o.st=2;upd(o);if(built().length>=6)fin("You own Lagos!","Six houses built. Landlord of the city.")})]:null);
+  return{t:o.n+" plot",d:o.st==0?"Land for sale. Own land, build a house, collect rent.":o.st==1?"Your land. Build to earn rent every day.":"Your house earns "+f(o.p*.08)+" per day.",a:a.filter(Boolean)}}
+ const h=hr();
+ if(o.k=="home"){const w=Math.max(1,((360-S.min%1440+1440)%1440)/60);return{t:o.n,d:"A face-me-I-face-you room. Rent is ₦15,000 every 7 days until you own a house.",a:[["Nap (3 hours)",()=>sleep(3)],[`Sleep till 6am (${w.toFixed(1)}h)`,()=>sleep(w)]]}}
+ if(o.k=="food")return{t:o.n,d:"Hot food, long queue.",a:[["Rice & stew (₦1,200)",()=>eat(1200,35,.5)],["Full meal (₦2,500)",()=>eat(2500,70,1)]]};
+ if(o.k=="mkt")return{t:o.n,d:"Buy and sell, shout above the noise.",a:[["Trade goods, 2h (about ₦3,500)",()=>work(2,3500,12,"Sales done!")]]};
+ if(o.k=="tech")return{t:o.n,d:"Freelance desks. Open 9am to 5pm.",a:[["Freelance shift, 4h (about ₦9,000)",()=>work(4,9000,20,"Client paid!",h>=9&&h<=13)]]};
+ if(o.k=="danfo")return{t:o.n,d:"Rent a danfo and drive it yourself, or ride as conductor.",a:[["Drive a danfo (₦1,000 remittance per day)",startDrive],["Ride as conductor, 3h (about ₦5,000)",()=>work(3,5000,18,"Fares collected!")]]};
+ return{t:o.n,d:`Prepaid light. You have ${S.pw} day(s) left.`,a:[["Buy 3 days of light (₦2,500)",()=>spend(2500,"Light don come!",()=>S.pw=Math.min(7,S.pw+3))]]}}
+function show(o){S.menu=o;const m=menuOf(o);$("mt").textContent=m.t;$("md").textContent=m.d;const ma=$("ma");ma.innerHTML="";
+ m.a.forEach(([l,fn])=>{const b=document.createElement("button");b.textContent=l;b.onclick=()=>pick(o,l,fn);ma.appendChild(b)});
+ const c=document.createElement("button");c.textContent="Leave";c.className="x";c.onclick=()=>{S.menu=0;$("menu").style.display="none"};ma.appendChild(c);$("menu").style.display="flex"}
+let near=null;const inter=()=>{if(S.over||S.menu)return;if(S.jail)return show({k:"jail"});if(S.drv)return park();if(S.nd)return startDrive(S.nd);if(near)show(near)};$("go").onclick=inter;
+function nb(l,v,w){v=Math.max(0,Math.min(100,v));const c=v>50?"#2ecc71":v>25?"#f5b800":"#e74c3c";return `<div><b>${l}${v<25?" ⚠️":""}</b><div class="bar"><i style="width:${v}%;background:${c}"></i></div><span style="font-size:11px;color:#ccc">${Math.round(v)}% ${w}</span></div>`}
+function hud(){if(S.lc!==undefined&&Math.abs(S.cash-S.lc)>=1)S.cd={d:S.cash-S.lc,t:performance.now()};S.lc=S.cash;const h=hr(),hh=String(h|0).padStart(2,"0"),mm=String((h%1)*60|0).padStart(2,"0");
+ const rent=built().length?"Owner, no rent":f(15000)+" in "+((7-S.day%7)%7||7)+"d";
+ $("hud").innerHTML=`<div><b>Day ${S.day}</b>${hh}:${mm}</div><div><b>Cash</b>${f(S.cash)} ${S.cd&&performance.now()-S.cd.t<4000?`<span style="color:${S.cd.d>0?"#2ecc71":"#ff6b6b"};font-size:12px">${S.cd.d>0?"+":"-"}${f(Math.abs(S.cd.d))}</span>`:""}</div>${nb("Hunger",S.hunger,"fed")}${nb("Tiredness",S.energy,"rested")}<div><b>Light</b>${S.pw} day(s)</div><div><b>Rent</b>${rent}</div><div><b>Property</b>${PL.filter(p=>p.o===myId).length} owned · ${PL.reduce((a,p)=>a+(p.o===myId?(p.h||0):0),0)} houses</div><div><b>Tax</b>${S.tax?f(S.tax):"none"}</div>${S.jail?`<div style="background:#a02"><b>JAIL</b>${Math.max(0,(S.jail-S.min)/60).toFixed(1)}h left</div>`:""}`}
+const dc=new THREE.Color(0x87c0e8),nc=new THREE.Color(0x0b1020),bgc=new THREE.Color();
+let last=performance.now();
+(function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;
+ if(!S.over&&!S.menu&&!S.drv){let x=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x,y=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;const l=Math.hypot(x,y);if(l>1){x/=l;y/=l}
+  const vx=Math.cos(yaw)*x+Math.sin(yaw)*y,vz=-Math.sin(yaw)*x+Math.cos(yaw)*y;let px=pl.position.x+vx*7*dt,pz=pl.position.z+vz*7*dt;
+  col.forEach(c=>{const nx=Math.max(c[0]-c[2],Math.min(px,c[0]+c[2])),nz=Math.max(c[1]-c[3],Math.min(pz,c[1]+c[3])),dx=px-nx,dz=pz-nz,d=Math.hypot(dx,dz);if(d<.6){if(d>0){px=nx+dx/d*.6;pz=nz+dz/d*.6}else px+=1}});
+  pl.position.x=Math.max(-82,Math.min(82,px));pl.position.z=Math.max(-82,Math.min(82,pz));if(l>.1)pl.rotation.y=Math.atan2(vx,vz);tick(dt*6)}
+ const k=Math.max(0,Math.sin((hr()-6)/12*Math.PI));bgc.copy(nc).lerp(dc,Math.min(1,k*1.6));sc.background=bgc;sc.fog.color.copy(bgc);hemi.intensity=.3+.8*k;sun.intensity=.1+.8*k;
+ danfos.forEach(d=>{if(d.cruise)return;d.g.position.set(d.hz?d.t:d.ln,0,d.hz?d.ln:d.t);d.g.rotation.y=d.ra!=null?d.ra:d.hz?(d.d>0?0:Math.PI):(d.d>0?-Math.PI/2:Math.PI/2)});
+ const cx=pl.position.x+Math.sin(yaw)*14*Math.cos(pit),cz=pl.position.z+Math.cos(yaw)*14*Math.cos(pit);cam.position.set(cx,1.5+14*Math.sin(pit),cz);cam.lookAt(pl.position.x,1.5,pl.position.z);
+ near=null;let bd=1e9;[...L,...PL].forEach(o=>{const d=Math.hypot(o.x-pl.position.x,o.z-pl.position.z);if(d<o.half+4&&d<bd){bd=d;near=o}});
+ const g=$("go");g.style.display=(near||S.drv||S.nd||S.jail)&&!S.menu&&!S.over?"block":"none";g.textContent=S.jail?"Jail menu (E)":S.drv?"Park danfo (E)":S.nd?"Enter danfo (E)":near?(near.k=="hawk"?"Buy snacks":"Enter "+near.n)+" (E)":"";
+ if(fr++%10==0)hud();R.render(sc,cam);})(last);
+S.menu="cc";
+const CLR=[0x0a8a4f,0xc0392b,0x2980b9,0x8e44ad,0xf39c12];let myClr=CLR[0],myName="Lagosian",room=null,db=null;const rem={};
+function setClr(c){myClr=c;pm.color.setHex(c)}
+CLR.forEach(c=>{const b=document.createElement("button");b.className="sw";b.style.background="#"+c.toString(16).padStart(6,"0");b.setAttribute("aria-label","Outfit colour");b.onclick=()=>setClr(c);$("sw").appendChild(b)});
+function paint(p){p.mk.material.color.setHex(!p.o?0xffffff:p.o===myId?0x8fe0a8:0xf5b070);p.sg.visible=!p.o;if(p.pole)p.pole.visible=!p.o;
+ if(p.b){p.hs.userData.roof.material.color.setHex(!p.o?p.rc:p.o===myId?0x1f9d5a:0xd9822b);return}
+ if(p.st==2&&!p.hs){p.hs=house(p);p.hcol=col[col.length-1];p.hs.userData.roof.material.color.setHex(p.o===myId?0x1f9d5a:0xd9822b)}
+ if(p.st<2&&p.hs){sc.remove(p.hs);const k=col.indexOf(p.hcol);if(k>=0)col.splice(k,1);p.hs=null}}
+const _mo=menuOf;
+menuOf=function(o){if(!o.pl)return _mo(o);const i=PL.indexOf(o),mine=o.o===myId,a=[];
+ if(!o.o)a.push([`Buy plot ${f(o.p)}`,()=>claim(i,1,o.p)]);else if(mine&&o.st==1)a.push([`Build house ${f(o.p/2)}`,()=>claim(i,2,o.p/2)]);
+ return{t:o.n+" plot",d:!o.o?"Land for sale. Set with "+PL[i^1].n+": own both for x2 income. First to buy owns it.":mine?(o.st==1?"Your land. Build to earn rent every day.":"Your house earns "+f(o.p*.08*(set(o)?2:1))+" per day."+(set(o)?" Colour set bonus x2!":" Own "+PL[PL.indexOf(o)^1].n+" too for a x2 set bonus.")):"Owned by "+(o.on||"another player")+".",a}};
+
+const ready=(async()=>{if(typeof claude=="undefined")return;
+ try{const u=await claude.use("user");if(u)myId=(await u.id())||"solo"}catch(e){}
+ try{room=await claude.use("room")}catch(e){}
+ try{db=await claude.use("db")}catch(e){}
+ if(db){try{
+  db.collection("plots").onSnapshot(s=>s.docs.forEach(d=>{const v=d.data(),p=v&&PL[v.i];if(!p)return;const mine=p.o===myId;
+   if(mine&&!v.o&&performance.now()-(p.ct||0)<5000)return;
+   if(mine&&v.o&&v.o!==myId){S.cash+=p.myCost||0;toast("Someone else got "+p.n+" first. You were refunded "+f(p.myCost||0)+".");p.myCost=0}
+   Object.assign(p,{o:v.o,on:v.on,st:v.st,h:v.h||0});paint(p)}),()=>{});
+  db.collection("players").orderBy("net","desc").limit(5).onSnapshot(s=>{const l=$("lb");l.textContent="Richest in Lagos";s.docs.forEach(d=>{const v=d.data(),r=document.createElement("div");r.textContent=String(v.n).slice(0,14)+" "+f(v.net);l.appendChild(r)})},()=>{});
+  if(myId!="solo"){const s=await db.doc("players/"+myId).get();if(s.exists){const d=s.data();$("nm").value=String(d.n||"");if(d.c)setClr(d.c);if(d.s!=null)setSkin(d.s|0);if(Number.isFinite(d.cash)){Object.assign(S,{cash:d.cash,hunger:d.hunger,energy:d.energy,pw:d.pw,min:d.min,day:d.day});if(d.v!==2)S.cash+=35000}$("cb").textContent="Continue"}}
+ }catch(e){}}
+ $("mode").textContent=room?"Online: other players appear in your Lagos.":"Solo mode: multiplayer isn't available in this view."})();
+function mk(pr){const g=new THREE.Group(),m=new THREE.MeshLambertMaterial({color:Number(pr.c)|0}),a=new THREE.Mesh(new THREE.CylinderGeometry(.35,.45,1.2,12),m),b=new THREE.Mesh(new THREE.SphereGeometry(.35,12,10),new THREE.MeshLambertMaterial({color:0x8a5a3a}));a.position.y=.6;b.position.y=1.5;g.add(a,b);
+ const c=document.createElement("canvas");c.width=256;c.height=64;const x=c.getContext("2d");x.fillStyle="rgba(14,16,18,.8)";x.fillRect(0,0,256,64);x.fillStyle="#fff";x.textAlign="center";x.font="bold 30px Arial";x.fillText(String(pr.n||"?").slice(0,16),128,42);
+ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c)}));s.scale.set(4,1,1);s.position.y=2.6;g.add(s);g.position.set(+pr.x||0,0,+pr.z||0);sc.add(g);return{g,tx:+pr.x||0,tz:+pr.z||0,r:0}}
+function sync(peers){const ids=new Set();peers.forEach(p=>{const pr=p.presence;if(p.isMe||p.kind!="viewer"||pr.x==null)return;ids.add(p.peer);const a=rem[p.peer]||(rem[p.peer]=mk(pr));a.tx=+pr.x||0;a.tz=+pr.z||0;a.r=+pr.r||0;a.by=p.by;a.n=String(pr.n||"Player").slice(0,16)});
+ Object.keys(rem).forEach(k=>{if(!ids.has(k)){sc.remove(rem[k].g);delete rem[k]}});
+ const pp=$("pp");pp.textContent="Nearby players";Object.keys(rem).forEach(k=>{const r=document.createElement("div"),b=document.createElement("button");r.textContent=rem[k].n+" ";b.textContent="Send ₦5,000";b.onclick=()=>pay(k);r.appendChild(b);pp.appendChild(r)})}
+function pay(k){const a=rem[k];if(!a||!a.by)return toast("Can't send to this player");if(S.cash<5000)return toast("Not enough cash");S.cash-=5000;room.emit("pay",{to:a.by,a:5000,n:myName});toast("Sent ₦5,000 to "+a.n)}
+function chat(d){if(!d)return;const r=document.createElement("div");r.textContent=String(d.n).slice(0,16)+": "+String(d.t).slice(0,80);const l=$("cl");l.appendChild(r);while(l.children.length>5)l.firstChild.remove()}
+$("ci").onkeydown=e=>{e.stopPropagation();if(e.key=="Enter"&&e.target.value.trim()){const d={n:myName,t:e.target.value.trim().slice(0,80)};e.target.value="";room?room.emit("chat",d):chat(d)}};
+$("ci").onkeyup=$("nm").onkeyup=e=>e.stopPropagation();$("nm").onkeydown=e=>e.stopPropagation();
+function save(){if(!db||myId=="solo"||S.over||S.menu==="cc")return;const net=S.cash+PL.reduce((a,p)=>a+(p.o===myId?p.p:0),0);db.doc("players/"+myId).set({n:myName,c:myClr,s:mySkin,v:2,cash:Math.round(S.cash),hunger:Math.round(S.hunger),energy:Math.round(S.energy),pw:S.pw,min:Math.round(S.min),day:S.day,net:Math.round(net)}).catch(()=>{})}
+$("cb").onclick=async()=>{await ready;myName=($("nm").value.trim()||"Lagosian").slice(0,16);$("cc").style.display="none";S.menu=0;
+ if(room){try{room.presence({n:myName,c:myClr,s:mySkin,x:0,z:8,r:0});room.onPeers(c=>sync(c.peers),()=>{});room.on("chat",m=>chat(m.data),()=>{});
+  room.on("pay",m=>{const d=m.data||{};if(!m.isMe&&myId!="solo"&&d.to===myId){const a=Math.min(+d.a||0,50000);if(a>0){S.cash+=a;toast(d.w?String(d.who).slice(0,16)+" paid you "+f(a)+" rent at "+String(d.w).slice(0,24):String(d.n).slice(0,16)+" sent you "+f(a))}}},()=>{})}catch(e){}}
+ let ls="";setInterval(()=>{const k=pl.position.x.toFixed(1)+","+pl.position.z.toFixed(1);if(room&&k!==ls){ls=k;room.presence({n:myName,c:myClr,s:mySkin,x:+pl.position.x.toFixed(1),z:+pl.position.z.toFixed(1),r:+pl.rotation.y.toFixed(2)})}},150);
+ setInterval(save,8000);S.menu="gd";$("gd").style.display="flex"};
+const ST=[-75,-45,-15,15,45,75];
+function mkDanfo(){const m=mkDanfo.m||(mkDanfo.m={y:new THREE.MeshLambertMaterial({color:0xf2b705}),k:new THREE.MeshLambertMaterial({color:0x151515}),gl:new THREE.MeshLambertMaterial({color:0x6f93b0,transparent:true,opacity:.6}),s:new THREE.MeshLambertMaterial({color:0xb8bcc0}),hl:new THREE.MeshBasicMaterial({color:0xfff2b0}),tl:new THREE.MeshBasicMaterial({color:0xd62020}),w:new THREE.MeshLambertMaterial({color:0xf4f4f4}),t:new THREE.MeshLambertMaterial({color:0x222222})});
+ const g=new THREE.Group(),B=(w,h,d,mat,x,y,z)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);q.position.set(x,y,z);g.add(q);return q};
+ B(4.4,.85,1.85,m.y,0,.78,0);B(4.42,.2,1.87,m.k,0,.9,0);B(4.2,.95,1.8,m.y,-.05,1.72,0);B(4.3,.1,1.9,m.y,-.05,2.24,0);
+ [-1.55,-.55,.45,1.35].forEach(x=>B(.8,.55,1.84,m.gl,x,1.78,0));B(.05,.65,1.5,m.gl,2.06,1.75,0);B(.05,.6,1.5,m.gl,-2.16,1.75,0);
+ B(.18,.25,2,m.s,2.3,.42,0);B(.18,.25,2,m.s,-2.3,.42,0);B(.05,.2,.5,m.w,2.4,.42,0);B(.04,.3,1,m.k,2.21,.62,0);
+ [-.65,.65].forEach(z=>{B(.06,.2,.3,m.hl,2.22,.9,z);B(.06,.18,.28,m.tl,-2.22,.9,z)});
+ [[-1.4,-.95],[-1.4,.95],[1.4,-.95],[1.4,.95]].forEach(p=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,.26,14),m.t);w.rotation.x=Math.PI/2;w.position.set(p[0],.42,p[1]);g.add(w);const h=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.28,10),m.s);h.rotation.x=Math.PI/2;h.position.copy(w.position);g.add(h)});
+ B(2.6,.06,1.5,m.k,-.4,2.32,0);B(.9,.45,.7,new THREE.MeshLambertMaterial({color:0x7b5a3a}),-1,2.58,.2);B(.7,.35,.8,new THREE.MeshLambertMaterial({color:0x2b5f8a}),0,2.55,-.2);
+ const txt=["GOD DEY","NO CONDITION IS PERMANENT","ONE LOVE","OLUWA LAGBARA"][Math.random()*4|0],c=document.createElement("canvas");c.width=512;c.height=40;const x=c.getContext("2d");x.fillStyle="#151515";x.fillRect(0,0,512,40);x.fillStyle="#f2b705";x.font="bold 28px Arial";x.textAlign="center";x.fillText(txt,256,30);
+ const tx=new THREE.CanvasTexture(c);[1,-1].forEach(sd=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(3.4,.2),new THREE.MeshBasicMaterial({map:tx}));p.position.set(0,.9,sd*.94);if(sd<0)p.rotation.y=Math.PI;g.add(p)});
+ [[1.3,-.45],[-1.4,.4],[-.5,-.45],[.4,.45],[-.9,-.4]].forEach(p=>{const h=new THREE.Mesh(new THREE.SphereGeometry(.17,8,6),new THREE.MeshLambertMaterial({color:[0x8d5524,0x6b4423,0x4a2c17][Math.random()*3|0]}));h.position.set(p[0],1.75,p[1]);g.add(h)});
+ return g}
+const dv=mkDanfo();dv.visible=false;sc.add(dv);
+const mkr=new THREE.Mesh(new THREE.CylinderGeometry(2,2,9,20,1,true),new THREE.MeshBasicMaterial({color:0xf5b800,transparent:true,opacity:.45,side:THREE.DoubleSide}));mkr.visible=false;mkr.position.y=4.5;sc.add(mkr);
+const parked=[],pg=new THREE.Group();
+{pg.add(person(0xffffff,0xa86b3c,0x111111,0x333a52).g);pg.visible=false;sc.add(pg)}
+[[24,-21.5],[30,-21.5],[36,-21.5],[6,3],[6,-4]].forEach(p=>{const e={g:mkDanfo(),hz:true,ln:p[1],t:p[0],sp:0,d:1,ra:0};e.g.position.set(p[0],0,p[1]);sc.add(e.g);danfos.push(e);parked.push(e)});
+
+function detect(D){S.nd=null;if(D||S.menu||S.over)return;let pd=1e9;[...L,...PL].forEach(o=>{const d=Math.hypot(o.x-pl.position.x,o.z-pl.position.z);if(d<o.half+4&&d<pd)pd=d});let b=4.5;danfos.forEach(d=>{if(d.out)return;const q=Math.hypot(d.g.position.x-pl.position.x,d.g.position.z-pl.position.z);if(q<b&&q<pd){b=q;S.nd=d}})}
+
+
+const GIST=[["Black tax: family needs help",-1500],["Alert! A client paid you",4000],["Ajo payout hits",6000],["Owambe: you sprayed money",-1000],["Task force shakedown",-800],["NEPA bill arrives",-700],["You found money in an old jean",1000],["Task Force arrests you!",0,"jail"],["Get Out of Jail Free card",0,"card"]];
+const _dy=daily;daily=function(){_dy();
+ if(S.day%7==0){if(S.tax>0){S.tax=Math.round(S.tax*1.5);arrest("ignoring your tax bill")}S.tax=(S.tax||0)+Math.max(1000,Math.round((Math.max(0,S.cash)+PL.reduce((a,p)=>a+(p.o===myId?p.p:0),0))*.03));toast("FIRS tax bill: "+f(S.tax)+". Pay at the Tax Office.")}
+ if(Math.random()<.4){const c=GIST[Math.random()*GIST.length|0];if(c[2]=="jail")return arrest("a Task Force raid");if(c[2]=="card"){S.gojf=(S.gojf||0)+1;return toast("Lagos Gist: you got a Get Out of Jail Free card")}S.cash+=c[1];toast("Lagos Gist: "+c[0]+" ("+(c[1]>0?"+":"-")+f(Math.abs(c[1]))+")")}};
+function set(p){return p.o===myId&&PL[PL.indexOf(p)^1].o===myId}
+function stopPick(far){const D=S.drv;let c;do{c=STOPS[Math.random()*STOPS.length|0]}while(Math.hypot(c.x-D.x,c.z-D.z)<far);return [c.x,c.z,c.n,c.wx,c.wz]}
+function setMk(c){pg.visible=true;pg.position.set(S.drv.tgt[3],0,S.drv.tgt[4]);mkr.material.color.setHex(c);mkr.position.x=S.drv.tgt[0];mkr.position.z=S.drv.tgt[1];mkr.visible=true}
+function newPick(){const D=S.drv;D.load=0;D.tgt=stopPick(25);setMk(0xf5b800)}
+function startDrive(ent){ent=ent||parked.find(p=>!p.out);if(!ent)return toast("All danfos are out on the road");
+ if(S.hunger<10)return toast("Too hungry to drive. Eat first.");
+ if(S.rem!==S.day){const rc=ent.okada?700:1000;if(S.cash<rc)return toast("You need "+f(rc)+" for the owner's daily remittance");S.cash-=rc;S.rem=S.day;toast("Paid "+f(rc)+" remittance to the "+(ent.okada?"okada":"danfo")+" owner")}
+ const a0=(ent.ra!=null?ent.ra:ent.hz?(ent.d>0?0:Math.PI):(ent.d>0?-Math.PI/2:Math.PI/2))+Math.PI/2;
+ S.menu=0;$("menu").style.display="none";S.drv={x:ent.g.position.x,z:ent.g.position.z,a:a0,v:0,tgt:null,load:0,earn:0,n:0,t:0,ent,k:ent.okada?{mv:24,ac:22,st:2.8,r:1.1,ff:30,okada:1}:{mv:16,ac:14,st:1.9,r:2.2,ff:24,okada:0}};ent.out=true;ent.g.visible=false;pl.visible=false;(ent.okada?ov:dv).visible=true;newPick();$("dv").style.display="block";toast("Pick up passengers at the yellow bus stop marker. Slow down to stop. Press E to park.")}
+function park(){const D=S.drv;if(!D)return;const e=D.ent;dv.visible=false;ov.visible=false;pl.visible=true;pl.position.set(D.x-Math.cos(D.a)*3,0,D.z+Math.sin(D.a)*3);
+ e.out=false;e.g.visible=true;if(e.sp>0)newRoam();e.sp=0;e.cruise=0;e.v=0;e.hz=true;e.ln=D.z;e.t=D.x;e.ra=D.a-Math.PI/2;
+ S.drv=null;mkr.visible=false;pg.visible=false;$("dv").style.display="none";toast(D.n?`Shift over: ${D.n} trips, ${f(D.earn)} earned`:"Danfo parked")}
+let lt=performance.now();
+(function dr(now){requestAnimationFrame(dr);const dt=Math.min(.05,(now-lt)/1000);lt=now;const D=S.drv;detect(D);rentCheck();
+ if(D&&!S.over&&!S.menu){
+  const th=(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0)-joy.y,sg=(keys.a||keys.arrowleft?1:0)-(keys.d||keys.arrowright?1:0)-joy.x;
+  D.v+=th*D.k.ac*dt;D.v*=1-1.2*dt;D.v=Math.max(-6,Math.min(D.k.mv,D.v));
+  D.a+=Math.max(-1,Math.min(1,sg))*D.k.st*dt*Math.max(-1,Math.min(1,D.v/6));
+  let nx=D.x+Math.sin(D.a)*D.v*dt,nz=D.z+Math.cos(D.a)*D.v*dt;
+  col.forEach(c=>{const qx=Math.max(c[0]-c[2],Math.min(nx,c[0]+c[2])),qz=Math.max(c[1]-c[3],Math.min(nz,c[1]+c[3])),dx=nx-qx,dz=nz-qz,d=Math.hypot(dx,dz);if(d<D.k.r){if(d>0){nx=qx+dx/d*D.k.r;nz=qz+dz/d*D.k.r}D.v*=.6}});
+  D.x=Math.max(-82,Math.min(82,nx));D.z=Math.max(-82,Math.min(82,nz));carBump(D);
+  {const mv=D.k.okada?ov:dv;mv.position.set(D.x,0,D.z);mv.rotation.y=D.a-Math.PI/2}pl.position.set(D.x,0,D.z);pl.rotation.y=D.a;
+  let dy=(D.a+Math.PI)-yaw;dy=Math.atan2(Math.sin(dy),Math.cos(dy));yaw+=dy*2.5*dt;
+  tick(dt*6);mkr.rotation.y+=dt*2;
+  if(Math.hypot(D.x-D.tgt[0],D.z-D.tgt[1])<4.5&&Math.abs(D.v)<9){
+   if(!D.load){D.load=1;D.from=[D.x,D.z];D.tgt=stopPick(40);setMk(0x2ecc71);toast("Passenger on board. Take them to "+D.tgt[2]+" bus stop (green). Slow down to stop.")}
+   else{const hh=hr(),rush=(hh>=7&&hh<10)||(hh>=16&&hh<19),sk=(S.sk=S.sk||{}),lv=sk["Fares collected!"]||0,dist=Math.hypot(D.x-D.from[0],D.z-D.from[1]);
+    const fare=Math.round(dist*D.k.ff*(1+.03*Math.min(15,lv))*(rush?1.4:1)*(S.energy<30?.8:1)/10)*10;S.cash+=fare;sk["Fares collected!"]=lv+1;S.energy=Math.max(10,S.energy-3);D.earn+=fare;D.n++;toast("Fare paid +"+f(fare)+(rush?" (rush hour!)":""));newPick()}}
+  if(S.hunger<5){toast("Too hungry, parking the danfo");park()}
+  D.t+=dt;if(D.t>.3){D.t=0;$("dv").textContent=`Driving · ${D.load?"drop at ":"pick up at "}${D.tgt[2]} bus stop · fares today ${f(D.earn)} · ${Math.round(Math.abs(D.v)*3.6)} km/h`}}
+ })(lt);
+const SK=[0x8d5524,0x6b4423,0x4a2c17,0xa86b3c,0x3b2314];let mySkin=1;
+function person(shirt,skin,hair,pants){const g=new THREE.Group(),M=c=>c&&c.isMaterial?c:new THREE.MeshLambertMaterial({color:c}),sh=M(shirt),sk=M(skin),hm=M(hair),pt=M(pants),P={};
+ const limb=(x,y,mat,r,len,end)=>{const p=new THREE.Group(),m=new THREE.Mesh(new THREE.CylinderGeometry(r,r*.85,len,8),mat);p.position.set(x,y,0);m.position.y=-len/2;p.add(m);if(end){end.position.y=-len;p.add(end)}g.add(p);return p};
+ const shoe=()=>{const m=box(.2,.1,.34,0x1a1a1a);m.position.set(0,.05,.06);const w=new THREE.Group();w.add(m);return w};
+ const hand=()=>new THREE.Mesh(new THREE.SphereGeometry(.07,8,6),sk);
+ P.l=limb(-.13,.82,pt,.09,.82,shoe());P.r=limb(.13,.82,pt,.09,.82,shoe());
+ const t=new THREE.Mesh(new THREE.BoxGeometry(.5,.62,.28),sh);t.position.y=1.13;g.add(t);
+ P.la=limb(-.33,1.4,sh,.075,.62,hand());P.ra=limb(.33,1.4,sh,.075,.62,hand());
+ const n=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,.12,8),sk);n.position.y=1.5;
+ const h=new THREE.Mesh(new THREE.SphereGeometry(.16,14,10),sk);h.scale.y=1.12;h.position.y=1.66;
+ const hd=new THREE.Mesh(new THREE.SphereGeometry(.17,14,8,0,Math.PI*2,0,Math.PI/2),hm);hd.position.y=1.7;
+ const ey=[-.06,.06].map(x=>{const e=new THREE.Mesh(new THREE.SphereGeometry(.02,6,6),new THREE.MeshBasicMaterial({color:0x111111}));e.position.set(x,1.68,.145);return e});
+ g.add(n,h,hd,...ey);return{g,P}}
+function walk(p,sp,t,noArms){const a=sp>.5?Math.sin(t*9)*.75*Math.min(1,sp/6):0;p.P.l.rotation.x=a;p.P.r.rotation.x=-a;if(!noArms){p.P.la.rotation.x=-a;p.P.ra.rotation.x=a}}
+pl.remove(b1,b2);const skm=new THREE.MeshLambertMaterial({color:SK[mySkin]}),me=person(pm,skm,0x111111,0x2b3a55);pl.add(me.g);
+function setSkin(i){mySkin=i;skm.color.setHex(SK[i])}
+SK.forEach((c,i)=>{const b=document.createElement("button");b.className="sw";b.style.background="#"+c.toString(16).padStart(6,"0");b.setAttribute("aria-label","Skin tone");b.onclick=()=>setSkin(i);$("sk").appendChild(b)});
+mk=function(pr){const p=person(Number(pr.c)|0,SK[Math.abs(pr.s|0)%SK.length],0x111111,0x2b3a55),g=p.g;
+ const c=document.createElement("canvas");c.width=256;c.height=64;const x=c.getContext("2d");x.fillStyle="rgba(14,16,18,.8)";x.fillRect(0,0,256,64);x.fillStyle="#fff";x.textAlign="center";x.font="bold 30px Arial";x.fillText(String(pr.n||"?").slice(0,16),128,42);
+ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c)}));s.scale.set(4,1,1);s.position.y=2.5;g.add(s);g.position.set(+pr.x||0,0,+pr.z||0);sc.add(g);return{g,pe:p,tx:+pr.x||0,tz:+pr.z||0,r:0}};
+let lpx=0,lpz=0;
+(function an(now){requestAnimationFrame(an);const t=now/1000,sp=Math.hypot(pl.position.x-lpx,pl.position.z-lpz)*60;lpx=pl.position.x;lpz=pl.position.z;walk(me,S.drv||S.menu?0:sp,t);if(S.menu==="act"&&S.eat)me.P.ra.rotation.x=-2.2+Math.sin(t*12)*.25;
+ Object.values(rem).forEach(a=>{if(!a.pe)return;const s=Math.hypot(a.g.position.x-(a.lx||0),a.g.position.z-(a.lz||0))*60;a.lx=a.g.position.x;a.lz=a.g.position.z;walk(a.pe,s,t)});})(performance.now());
+const HK=[];
+function figure(c){const sk=new THREE.MeshLambertMaterial({color:SK[HK.length%SK.length]}),p=person(c,sk,0x111111,[0x2b3a55,0x4a3b2a,0x333333][HK.length%3]),t=box(.8,.1,.5,0xf5e6c8);t.position.set(0,1.05,.4);p.g.add(t);p.g.userData.pe=p;sc.add(p.g);return p.g}
+function hawker(x,z,ax,amp){const o={n:"Street hawker",k:"hawk",half:1,x,z,bx:x,bz:z,ax,amp,f:.4+Math.random()*.3,ph:Math.random()*6,g:figure([0xd35400,0x2980b9,0x16a085,0xc0392b][HK.length%4])};o.g.position.set(x,0,z);const s=sign("Snacks|Gala, pure water",0,2.8,0,.5);o.g.add(s);HK.push(o);L.push(o)}
+[[24,-19.8,0,3],[36,-19.8,0,3],[10.6,0,1,6]].forEach(p=>hawker(...p));
+[[9,-9],[-9,9],[21,-9],[-21,10]].forEach(p=>{bld(p[0],p[1],3.2,2.4,2.6,0xd9822b);sign("Mama Put|(roadside)",p[0],3.6,p[1],.6);L.push({n:"Roadside Mama Put",x:p[0],z:p[1],half:2,k:"food"})});
+const _m2=menuOf;
+menuOf=function(o){
+ if(o.k=="hawk")return{t:"Street hawker",d:"Hot snacks at the window. Cheap, but they fill you less than a full meal.",a:[["Gala (₦300)",()=>eat(300,10,.05)],["Pure water (₦100)",()=>eat(100,3,.02)],["Plantain chips (₦200)",()=>eat(200,8,.03)],["Roasted corn and pear (₦500)",()=>eat(500,20,.1)],["Suya (₦1,000)",()=>eat(1000,32,.15)]]};
+ if(o.k=="hosp")return{t:o.n,d:"Treatment and insurance. Danfo accidents are costly.",a:[["Health insurance, 7 days (₦6,000)",()=>spend(6000,"Insured! Hospital bills are covered for 7 days.",()=>S.ins=S.day+7)]]};
+ return _m2(o)};
+const fl=document.createElement("div");fl.style.cssText="position:fixed;inset:0;background:#c0392b;opacity:0;pointer-events:none;transition:opacity .5s;z-index:4";document.body.appendChild(fl);
+let inv=0;
+function hit(){if(S.menu||S.drv||S.over)return;inv=performance.now()+6000;S.menu="hit";fl.style.opacity=.6;pl.rotation.x=-1.4;toast((hit.by||"A danfo")+" knocked you down! Look before you cross.");
+ setTimeout(()=>{const bill=S.ins>S.day?0:2500;S.cash-=bill;adv(3);pl.rotation.x=0;pl.position.set(30,0,20);fl.style.opacity=0;S.menu=0;toast(bill?"General Hospital treated you. Bill: "+f(bill):"General Hospital treated you. Insurance covered the bill.")},1600)}
+const mm=$("mm"),mc=mm.getContext("2d");let mf=0,big=false;
+mm.onclick=()=>{big=!big;mm.classList.toggle("big",big)};
+function drawMap(){if(mf++%3)return;const W=300,s=W/200,X=x=>(x+100)*s,Y=z=>(z+100)*s;mc.clearRect(0,0,W,W);mc.fillStyle="rgba(20,24,28,.9)";mc.fillRect(0,0,W,W);
+ mc.fillStyle="#3b4248";[-75,-45,-15,15,45,75].forEach(r=>{mc.fillRect(X(r)-4*s,0,8*s,W);mc.fillRect(0,Y(r)-4*s,W,8*s)});
+ const IC={home:"🏠",food:"🍲",mkt:"🛒",tech:"💼",danfo:"🚌",nepa:"💡",hosp:"🏥",police:"🚔",tax:"🏛️",owambe:"🎉"};
+ mc.textAlign="center";mc.textBaseline="middle";mc.font="20px Arial";
+ L.forEach(o=>{if(o.k!="hawk")mc.fillText(IC[o.k]||"•",X(o.x),Y(o.z))});
+ PL.forEach(p=>{mc.fillStyle=!p.o?"#c9a66b":p.o===myId?"#2ecc71":"#e67e22";mc.fillRect(X(p.x)-8,Y(p.z)-8,16,16);mc.fillStyle="#111";mc.font="bold 12px Arial";mc.fillText(p.b?"B":p.st==2?"H":"$",X(p.x),Y(p.z))});
+ mc.fillStyle="#ffd54f";HK.forEach(h=>mc.fillRect(X(h.x)-2,Y(h.z)-2,4,4));mc.font="16px Arial";STOPS.forEach(s=>mc.fillText("🚏",X(s.cx),Y(s.cz)));mc.fillStyle="#ff5252";okadas.forEach(d=>mc.fillRect(X(d.g.position.x)-2,Y(d.g.position.z)-2,4,4));
+ mc.fillStyle="#f5b800";danfos.forEach(d=>{if(!d.out&&d.sp)mc.fillRect(X(d.g.position.x)-2,Y(d.g.position.z)-2,4,4)});
+ Object.values(rem).forEach(a=>{mc.fillStyle="#ff6b9d";mc.beginPath();mc.arc(X(a.g.position.x),Y(a.g.position.z),4,0,7);mc.fill()});
+ if(S.drv&&S.drv.tgt){mc.strokeStyle=S.drv.load?"#2ecc71":"#f5b800";mc.lineWidth=3;mc.beginPath();mc.arc(X(S.drv.tgt[0]),Y(S.drv.tgt[1]),9,0,7);mc.stroke()}
+ mc.save();mc.translate(X(pl.position.x),Y(pl.position.z));mc.rotate(Math.PI-pl.rotation.y);mc.fillStyle="#fff";mc.strokeStyle="#0a8a4f";mc.lineWidth=2;mc.beginPath();mc.moveTo(0,-9);mc.lineTo(7,8);mc.lineTo(-7,8);mc.closePath();mc.fill();mc.stroke();mc.restore();
+ if(big){mc.fillStyle="#fff";mc.font="bold 11px Arial";L.forEach(o=>{if(o.k!="hawk")mc.fillText(o.n.slice(0,16),X(o.x),Y(o.z)+16)})}}
+(function w(now){requestAnimationFrame(w);const t=now/1000;
+ HK.forEach(h=>{const s=Math.sin(t*h.f+h.ph)*h.amp;if(h.ax)h.z=h.bz+s;else h.x=h.bx+s;h.g.position.set(h.x,0,h.z);const cv_=Math.cos(t*h.f+h.ph);h.g.rotation.y=h.ax?(cv_>0?0:Math.PI):(cv_>0?Math.PI/2:-Math.PI/2);walk(h.g.userData.pe,3,t,true)});
+ if(!S.drv&&!S.over&&!S.menu&&performance.now()>inv)danfos.forEach(d=>{if(d.out||!(d.v>1))return;const th=d.g.rotation.y,dx=pl.position.x-d.g.position.x,dz=pl.position.z-d.g.position.z,lx=dx*Math.cos(th)-dz*Math.sin(th),lz=dx*Math.sin(th)+dz*Math.cos(th);if(Math.abs(lx)<2.7&&Math.abs(lz)<1.3)hit()});
+ $("hk").style.display=(S.drv&&near&&near.k=="hawk"&&Math.abs(S.drv.v)<6&&!S.menu&&!S.over)?"block":"none";
+ drawMap();})(performance.now());
+const _m3=menuOf;
+menuOf=function(o){
+ if(o.k=="food")return{t:o.n,d:"Hot Nigerian food, served on a plate. Pick what you want.",a:[["Jollof rice & chicken (₦2,000)",()=>meal(2000,50,.6)],["Pounded yam & egusi (₦2,500)",()=>meal(2500,60,.8)],["Amala, ewedu & gbegiri (₦1,800)",()=>meal(1800,45,.6)],["Fried rice & plantain (₦1,800)",()=>meal(1800,45,.6)],["Rice & stew (₦1,200)",()=>meal(1200,35,.5)],["Pepper soup (₦1,500)",()=>meal(1500,30,.4)],["Moi moi (₦500)",()=>meal(500,15,.2)],["Fried plantain, dodo (₦400)",()=>meal(400,12,.1)]]};
+ const m=_m3(o);if(o.k=="hawk")m.a=m.a.map(([l,fn])=>[l,()=>S.hunger>=95?toast("You are full already"):fn()]);return m};
+function meal(c,v,h){if(S.hunger>=95)return toast("You are full already");eat(c,v,h)}
+const ab=document.createElement("div");ab.style.cssText="position:fixed;left:50%;top:16%;transform:translateX(-50%);background:var(--pn);border:2px solid var(--y);border-radius:10px;padding:6px 14px;text-align:center;font-weight:800;font-size:13px;z-index:9;display:none;max-width:72%";document.body.appendChild(ab);
+function banner(em,ti,de){ab.innerHTML="";const a=document.createElement("div");a.style.fontSize="24px";a.textContent=em;const b=document.createElement("div");b.textContent=ti;const c=document.createElement("div");c.style.cssText="font-size:11px;font-weight:600;color:#ddd;margin-top:2px";c.textContent=de||"";ab.append(a,b,c);ab.style.display="block";ab.style.animation="none";void ab.offsetWidth;ab.style.animation="pop .35s ease-out";clearTimeout(banner.h);banner.h=setTimeout(()=>ab.style.display="none",2800)}
+function emote(em){const c=document.createElement("canvas");c.width=c.height=128;const x=c.getContext("2d");x.font="90px Arial";x.textAlign="center";x.textBaseline="middle";x.fillText(em,64,70);const t=new THREE.CanvasTexture(c),s=new THREE.Sprite(new THREE.SpriteMaterial({map:t}));s.scale.set(1.6,1.6,1);s.position.y=2.8;pl.add(s);setTimeout(()=>{pl.remove(s);t.dispose()},2500)}
+function emo(i){i=i.toLowerCase();return/rice/.test(i)?"🍛":/yam|egusi|soup/.test(i)?"🍲":/amala/.test(i)?"🥣":/plantain|dodo/.test(i)?"🍌":/moi/.test(i)?"🍘":/gala/.test(i)?"🥖":/water/.test(i)?"💧":/corn/.test(i)?"🌽":/suya/.test(i)?"🍢":"🍽️"}
+function pick(o,l,fn){const st=()=>[S.cash,S.hunger,S.min,S.pw,S.ins,S.drv?1:0,PL.filter(p=>p.o===myId).length,S.tax||0,S.ow||0,S.pm||0,o.st||0].join("|");
+ const c0=S.cash,h0=S.hunger,b=st();fn();if(S.over||S.drv||st()===b)return;
+ S.menu=0;$("menu").style.display="none";
+ const item=l.replace(/\s*\(.*\)\s*$/,""),dc=S.cash-c0,dh=Math.round(S.hunger-h0);let em="✅",ti="Done: "+item,note="";
+ if(o.k=="food"||o.k=="hawk"){em=emo(item);ti="You just bought "+item}
+ else if(o.pl){const bt=/^Buy/.test(item),sl=/^Sell/.test(item);em=sl?"💰":bt?"🏷️":"🏠";ti=sl?"You sold "+o.n:bt?(o.b?"You bought "+o.n:"You bought the land in "+o.n):"You built house "+(o.h||1)+" of "+o.cap+" in "+o.n;if(bt&&!o.b)note=" · this land holds "+o.cap+" houses"}
+ else if(o.k=="home"){em="😴";ti="You slept "+item.replace(/^Sleep /,"")+" and woke at "+clk()}
+ else if(o.k=="nepa"){em="💡";ti="You bought "+item}
+ else if(o.k=="hosp"){em="🏥";ti="You bought "+item}
+ else if(o.k=="mkt"||o.k=="tech"||o.k=="danfo"){em="💼";ti="You worked: "+item}
+ const de=(dc?(dc>0?"+":"-")+f(Math.abs(dc)):"")+(dh>0?(dc?" · ":"")+"Hunger +"+dh:"")+note;
+ banner(em,ti,de);emote(em);S.eat=(o.k=="food"||o.k=="hawk");S.menu="act";setTimeout(()=>{if(S.menu==="act"){S.menu=0;S.eat=0}},1500)}
+{const cv=document.createElement("canvas");cv.width=64;cv.height=128;const g=cv.getContext("2d");g.fillStyle="#2c3135";g.fillRect(0,0,64,128);
+ for(let i=0;i<350;i++){g.fillStyle="rgba(255,255,255,"+Math.random()*.06+")";g.fillRect(Math.random()*64,Math.random()*128,1,1)}
+ g.fillStyle="#f0f0f0";g.fillRect(2,0,2,128);g.fillRect(60,0,2,128);g.fillStyle="#e8c200";g.fillRect(30,8,4,48);
+ const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1,11);
+ [-75,-45,-15,15,45,75].forEach(r=>{const a=new THREE.Mesh(new THREE.PlaneGeometry(8,158),new THREE.MeshLambertMaterial({map:t}));a.rotation.x=-Math.PI/2;a.position.set(r,.03,0);sc.add(a);
+  const b=new THREE.Mesh(new THREE.PlaneGeometry(8,158),new THREE.MeshLambertMaterial({map:t}));b.rotation.set(-Math.PI/2,0,Math.PI/2);b.position.set(0,.04,r);sc.add(b)})}
+{const tm=new THREE.MeshLambertMaterial({color:0x6b4a2f}),lm=new THREE.MeshLambertMaterial({color:0x2f7d32,side:THREE.DoubleSide}),pm2=new THREE.MeshLambertMaterial({color:0x7a7f84}),lamp=new THREE.MeshBasicMaterial({color:0xfff3b0});
+ const palm=(x,z)=>{const g=new THREE.Group(),h=4+Math.random()*2,t=new THREE.Mesh(new THREE.CylinderGeometry(.14,.22,h,6),tm);t.position.y=h/2;g.add(t);
+  for(let i=0;i<8;i++){const a=i*.785,f=new THREE.Mesh(new THREE.BoxGeometry(2.2,.04,.5),lm);f.position.set(Math.cos(a),h+.05,Math.sin(a));f.rotation.set(0,-a,-.45);g.add(f)}g.position.set(x,.2,z);sc.add(g)};
+ for(let i=-2;i<=2;i++)for(let j=-2;j<=2;j++)if(used.has(i+","+j))[[-9.8,-9.8],[9.8,-9.8],[-9.8,9.8],[9.8,9.8]].forEach(o=>{{const px=i*30+o[0],pz=j*30+o[1];if(Math.random()<.6&&![[9,-9],[-9,9],[21,-9],[-21,10]].some(q=>Math.hypot(px-q[0],pz-q[1])<3.5))palm(px,pz)}});
+ [-45,-15,15,45].forEach(x=>[-45,-15,15,45].forEach(z=>{const g=new THREE.Group(),p=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,5.5,6),pm2);p.position.y=2.75;const a=new THREE.Mesh(new THREE.BoxGeometry(1.2,.08,.08),pm2);a.position.set(-.5,5.5,0);const l=new THREE.Mesh(new THREE.BoxGeometry(.4,.12,.25),lamp);l.position.set(-1.1,5.4,0);g.add(p,a,l);g.position.set(x+5,.2,z+5);sc.add(g)}))}
+function concTex(){if(concTex.t)return concTex.t;const c=document.createElement("canvas");c.width=c.height=64;const g=c.getContext("2d");g.fillStyle="#9c9a94";g.fillRect(0,0,64,64);for(let i=0;i<300;i++){g.fillStyle="rgba(0,0,0,"+Math.random()*.12+")";g.fillRect(Math.random()*64,Math.random()*64,2,2)}return concTex.t=new THREE.CanvasTexture(c)}
+function estate(p){const m=new THREE.Mesh(new THREE.PlaneGeometry(14,14),new THREE.MeshLambertMaterial({map:concTex()}));m.rotation.x=-Math.PI/2;m.position.set(p.x,.22,p.z);sc.add(m);p.mk=m;p.hs=bld(p.x,p.z,p.b.w,p.b.d,p.b.h,p.b.c,{flat:true});p.rc=p.hs.userData.roof.material.color.getHex()}
+const sellv=o=>Math.round(o.p*.5+(o.b?0:(o.h||0)*o.p*.15));
+
+let inv2=0;
+function arrest(why){if(S.jail||S.over||performance.now()<inv2)return;if(S.drv)park();S.jail=S.min+720;S.menu="act";S.eat=0;pl.position.set(-30,0,4);fl.style.opacity=.35;setTimeout(()=>{fl.style.opacity=0;if(S.menu==="act")S.menu=0},1500);banner("🚔","Arrested for "+why,"Bail is "+f(5000)+" (press E for the jail menu), or serve 12 hours.")}
+function release(){S.jail=0;pl.position.set(-30,0,-12.5);inv2=performance.now()+60000;banner("🔓","You are free","Stay out of trouble.")}
+const _m4=menuOf;
+menuOf=function(o){
+ if(o.pl){const i=PL.indexOf(o),mine=o.o===myId,a=[],h=o.h||0,bc=Math.round(o.p*.3),inc=(o.b?o.p*.025:o.p*.02*h)*(set(o)?2:1),rent=Math.max(200,Math.round(o.p*(o.b?.02:.015+.01*h)));
+  if(!o.o)a.push([o.b?`Buy ${f(o.p)}`:`Buy land ${f(o.p)}`,()=>claim(i,o.b?2:1,o.p)]);
+  else if(mine){if(!o.b&&h<o.cap)a.push([`Build house ${h+1} of ${o.cap} (${f(bc)})`,()=>claim(i,2,bc)]);a.push([`Sell back for ${f(sellv(o))}`,()=>sell(i)])}
+  return{t:o.n,d:!o.o?(o.b?"Building for sale. ":"Land for sale. It can hold "+o.cap+" houses, built one at a time. ")+"Set with "+PL[i^1].n+": own both for x2 income. Other players pay "+f(rent)+" rent when they step onto it.":mine?(o.b?"Earns "+f(inc)+" per day.":"Houses: "+h+" of "+o.cap+". Each house earns "+f(o.p*.02*(set(o)?2:1))+" per day. Now earning "+f(inc)+" per day.")+(set(o)?" Colour set bonus x2!":" Own "+PL[i^1].n+" too for x2 income.")+" Visitors pay you "+f(rent)+".":"Owned by "+(o.on||"another player")+". You pay "+f(rent)+" rent when you step onto it.",a}}
+ if(o.k=="jail"){const hrs=Math.max(0,(S.jail-S.min)/60);return{t:"Police cell",d:`You are in jail. ${hrs.toFixed(1)} hours left. Bail is ₦5,000.`,a:[["Pay bail (₦5,000)",()=>spend(5000,"Bail paid.",()=>release())],S.gojf?["Use Get Out of Jail Free card",()=>{S.gojf--;release()}]:null,["Serve your time ("+hrs.toFixed(0)+"h)",()=>{adv(hrs);release()}],["Prison meal, free (garri and water)",()=>{if(S.pm>S.min)return toast("No more food yet");S.pm=S.min+360;S.hunger=Math.min(100,S.hunger+20);toast("You ate garri and water")}]].filter(Boolean)}}
+ if(o.k=="police")return{t:o.n,d:"Speed past a police car or ignore your tax bill and you land in the cell next door. Bail is ₦5,000.",a:[]};
+ if(o.k=="tax")return{t:o.n,d:S.tax>0?"Tax due: "+f(S.tax)+". Pay before the next bill or you will be arrested.":"You owe no tax. FIRS bills 3% of your net worth every 7 days.",a:S.tax>0?[["Pay tax "+f(S.tax),()=>spend(S.tax,"Tax paid. You are legal.",()=>S.tax=0)]]:[]};
+ if(o.k=="owambe")return{t:o.n,d:"Free party! Eat and dance once a day, on the house.",a:[["Free jollof and zobo",()=>{if(S.ow===S.day)return toast("You already ate here today");S.ow=S.day;S.hunger=Math.min(100,S.hunger+40);toast("You ate for free")}]]};
+ if(o.k=="home"){const w=Math.max(1,((360-S.min%1440+1440)%1440)/60);return{t:o.n,d:"Choose how long to sleep. Time moves forward by exactly that many hours.",a:[...[1,2,4,6,8,10,12].map(h=>["Sleep "+h+" hour"+(h>1?"s":""),()=>sleep(h)]),[`Sleep till 6am (${w.toFixed(1)}h)`,()=>sleep(w)]]}}
+ return _m4(o)};
+{const wm=new THREE.MeshLambertMaterial({color:0x8a8d90}),jw=(x,z,w,d)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(w,2.2,d),wm);q.position.set(x,1.1,z);sc.add(q);col.push([x,z,w/2,d/2])};
+ jw(-30,-1,14,.3);jw(-30,9,14,.3);jw(-37,4,.3,10);jw(-23,4,.3,10);sign("JAIL|Police cells",-30,3.4,4,.7)}
+function mkCop(){const g=new THREE.Group(),M=c=>new THREE.MeshLambertMaterial({color:c}),B=(w,h,d,c,x,y,z)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),c.isMaterial?c:M(c));q.position.set(x,y,z);g.add(q)};
+ B(4.2,.8,1.8,0xf2f2f2,0,.7,0);B(2.2,.7,1.7,0xf2f2f2,-.2,1.4,0);B(4.22,.2,1.82,0x1f4fa8,0,.75,0);B(2.1,.5,1.72,new THREE.MeshLambertMaterial({color:0x6f93b0,transparent:true,opacity:.6}),-.2,1.45,0);
+ B(.5,.15,.5,0xd62020,-.2,1.85,-.4);B(.5,.15,.5,0x2050d6,-.2,1.85,.4);
+ [[-1.3,-.9],[-1.3,.9],[1.3,-.9],[1.3,.9]].forEach(p=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(.38,.38,.25,12),M(0x222222));w.rotation.x=Math.PI/2;w.position.set(p[0],.38,p[1]);g.add(w)});return g}
+const cops=[0,1].map(n=>{const e={g:mkCop(),sp:9};sc.add(e.g);return e});
+const peds=[];for(let n=0;n<18;n++){const i=(Math.random()*5|0)-2,j=(Math.random()*5|0)-2,p=person([0xc0392b,0x2980b9,0x16a085,0xf39c12,0x7f8c8d,0x8e44ad][n%6],SK[n%5],0x111111,[0x2b3a55,0x4a3b2a,0x333333][n%3]);sc.add(p.g);peds.push({p,cx:i*30,cz:j*30,t:Math.random()*80,s:1.2+Math.random()*.6,dir:Math.random()<.5?1:-1})}
+let lc=performance.now();
+(function pc(now){requestAnimationFrame(pc);const dt=Math.min(.05,(now-lc)/1000);lc=now;const H=10.4,PER=8*H;
+ 
+ peds.forEach(q=>{q.t+=q.s*dt*q.dir;const u=((q.t%PER)+PER)%PER,sd=Math.floor(u/(2*H)),r=u%(2*H)-H;let x,z;if(sd==0){x=r;z=-H}else if(sd==1){x=H;z=r}else if(sd==2){x=-r;z=H}else{x=-H;z=-r}
+  const nx=q.cx+x,nz=q.cz+z,dx=nx-q.p.g.position.x,dz=nz-q.p.g.position.z;if(dx||dz)q.p.g.rotation.y=Math.atan2(dx,dz);q.p.g.position.set(nx,.2,nz);walk(q.p,3,now/1000)});
+ if(S.jail&&S.min>=S.jail)release();
+ if(S.drv&&!S.jail&&!S.menu&&performance.now()>inv2&&Math.abs(S.drv.v)>(S.drv.k.okada?16:11.5))cops.some(c=>{if(Math.hypot(c.g.position.x-S.drv.x,c.g.position.z-S.drv.z)<14){arrest("speeding past a police car");return true}return false});
+ })(lc);
+/* ---------- border, traffic loops ---------- */
+for(let i=-8;i<=8;i++){const c=i*10,pal=[0x8d9aa3,0xb8a58f,0x7a8f9a,0xa0807a,0xc9c1b4],hs=[6,8,10,12];
+ bld(c,-90,10,8,hs[Math.random()*4|0],pal[Math.random()*5|0]);bld(c,90,10,8,hs[Math.random()*4|0],pal[Math.random()*5|0]);bld(-90,c,8,10,hs[Math.random()*4|0],pal[Math.random()*5|0]);bld(90,c,8,10,hs[Math.random()*4|0],pal[Math.random()*5|0])}
+[[-90,-90],[90,-90],[-90,90],[90,90]].forEach(p=>bld(p[0],p[1],10,10,10,0x8d9aa3));
+{const wt=box(900,.1,900,0x2a6f97);wt.position.y=-.35;sc.add(wt)}
+const LOOPS=[[75,75],[45,45],[75,45],[45,75],[15,45],[45,15],[75,15],[15,75]];
+function lpos(d){const A=d.A,B=d.B,P=4*A+4*B,u=((d.u%P)+P)%P;let x,z,hx,hz;
+ if(u<2*A){x=-A+u;z=-B;hx=1;hz=0}else if(u<2*A+2*B){x=A;z=-B+(u-2*A);hx=0;hz=1}else if(u<4*A+2*B){x=A-(u-2*A-2*B);z=B;hx=-1;hz=0}else{x=-A;z=B-(u-4*A-2*B);hx=0;hz=-1}
+ if(d.dir<0){hx=-hx;hz=-hz}return{x,z,hx,hz}}
+function toLoop(d,n){const lp=LOOPS[n%LOOPS.length];d.dir=n%2?-1:1;d.A=lp[0]-3*d.dir;d.B=lp[1]-3*d.dir;d.u=Math.random()*4*(d.A+d.B);d.cruise=d.sp;d.v=d.sp;const q=lpos(d);d.ra=Math.atan2(-q.hz,q.hx);d.g.position.set(q.x,0,q.z);d.g.rotation.y=d.ra}
+danfos.forEach((d,n)=>{if(d.sp>0)toLoop(d,n)});cops.forEach((c,n)=>toLoop(c,n*3+1));
+function newRoam(){const e={g:mkDanfo(),sp:7+Math.random()*4};sc.add(e.g);toLoop(e,Math.random()*8|0);danfos.push(e)}
+function carBump(D){const hx=Math.sin(D.a),hz=Math.cos(D.a),lg=D.k.okada?.4:1.3,mine=[[D.x+hx*lg,D.z+hz*lg],[D.x-hx*lg,D.z-hz*lg]];
+ for(const o of [...danfos.filter(d=>!d.out),...cops,...okadas]){const a=o.g.rotation.y,fx=Math.cos(a),fz=-Math.sin(a),oc=[[o.g.position.x+fx*1.3,o.g.position.z+fz*1.3],[o.g.position.x-fx*1.3,o.g.position.z-fz*1.3]];
+  for(const m of mine)for(const c of oc){const dx=m[0]-c[0],dz=m[1]-c[1],d=Math.hypot(dx,dz);if(d<(D.k.okada?1.9:2.4)&&d>.001){const k=(D.k.okada?1.9:2.4)-d;D.x+=dx/d*k;D.z+=dz/d*k;D.v*=.7;if(performance.now()>(carBump.t||0)){carBump.t=performance.now()+1500;toast("Bump! Watch the road")}}}}}
+let lt2=performance.now();
+(function tr(now){requestAnimationFrame(tr);const dt=Math.min(.05,(now-lt2)/1000);lt2=now;
+ const all=[...danfos.filter(d=>!d.out),...cops],obs=[...all,...okadas];
+ all.forEach(d=>{if(!d.cruise)return;const p=lpos(d);let tgt=d.cruise;
+  if(!(d.ghost>now)){let near=1e9;const chk=(x,z)=>{const ox=x-p.x,oz=z-p.z,dist=Math.hypot(ox,oz);if(dist<9&&dist>.01&&(ox*p.hx+oz*p.hz)/dist>.8&&dist<near)near=dist};
+   for(const o of obs)if(o!==d)chk(o.g.position.x,o.g.position.z);if(S.drv)chk(S.drv.x,S.drv.z);
+   if(near<6.5)tgt=0;else if(near<9)tgt=d.cruise*.4}
+  d.v+=(tgt-d.v)*Math.min(1,dt*(tgt<d.v?6:1.5));
+  if(d.v<.3){d.stuck=(d.stuck||0)+dt;if(d.stuck>5){d.ghost=now+3000;d.stuck=0}}else d.stuck=0;
+  d.u+=d.dir*d.v*dt;const q=lpos(d);d.g.position.set(q.x,0,q.z);
+  const th=Math.atan2(-q.hz,q.hx);let df=th-d.ra;df=Math.atan2(Math.sin(df),Math.cos(df));d.ra+=df*Math.min(1,dt*8);d.g.rotation.y=d.ra})})(lt2);
+/* ---------- plots hold several houses ---------- */
+[2,3,3,4,5,6].forEach((c,i)=>{PL[i].cap=c});PL.forEach(p=>{p.h=0});
+const SLOTS={2:[[-3.6,0],[3.6,0]],3:[[-4.2,-2.8],[4.2,-2.8],[0,3.2]],4:[[-3.6,-3.4],[3.6,-3.4],[-3.6,3.4],[3.6,3.4]],5:[[-4.4,-3.4],[0,-3.4],[4.4,-3.4],[-2.5,3.4],[2.5,3.4]],6:[[-4.4,-3.4],[0,-3.4],[4.4,-3.4],[-4.4,3.4],[0,3.4],[4.4,3.4]]};
+const SIZE={2:[5.2,6],3:[4.4,4.4],4:[4.8,4.8],5:[3.8,4.6],6:[3.8,4.6]},HC=[0x8fbf9f,0xe3d3b1,0xd7b59a,0xf0e6d6,0xcfd8dc,0xf5efe6],HH=[3.2,3.4,3.6,3.8,5,5.5];
+function setHouses(p){p.hss=p.hss||[];p.hcs=p.hcs||[];const want=p.h||0,k=PL.indexOf(p),sz=SIZE[p.cap],sl=SLOTS[p.cap];
+ while(p.hss.length<want){const s=p.hss.length,g=bld(p.x+sl[s][0],p.z+sl[s][1],sz[0],sz[1],HH[k],HC[(k+s)%6],{flat:k>=4});p.hss.push(g);p.hcs.push(col[col.length-1])}
+ while(p.hss.length>want){sc.remove(p.hss.pop());const c=p.hcs.pop(),i=col.indexOf(c);if(i>=0)col.splice(i,1)}
+ p.hss.forEach(g=>g.userData.roof.material.color.setHex(p.o===myId?0x1f9d5a:0xd9822b))}
+function paint(p){p.mk.material.color.setHex(!p.o?0xffffff:p.o===myId?0x8fe0a8:0xf5b070);p.sg.visible=!p.o;if(p.pole)p.pole.visible=!p.o;
+ if(p.b){p.hs.userData.roof.material.color.setHex(!p.o?p.rc:p.o===myId?0x1f9d5a:0xd9822b);return}setHouses(p)}
+function claim(i,st,cost){const o=PL[i];if(S.cash<cost)return toast("Not enough cash");if(o.o&&o.o!==myId)return toast("Someone just took it!");if(st==2&&!o.b&&(o.h||0)>=o.cap)return toast("This plot is full");
+ S.cash-=cost;o.myCost=(o.myCost||0)+cost;o.ct=performance.now();const h=o.b?0:st==2?(o.h||0)+1:0;Object.assign(o,{o:myId,on:myName,st:(o.b||h)?2:1,h});paint(o);if(db)db.doc("plots/p"+i).set({i,o:myId,on:myName,st:o.st,h}).catch(()=>{});toast(o.b?"Building is yours!":st==1?"Land is yours!":"House built!")}
+function sell(i){const o=PL[i];if(o.o!==myId)return;const v=sellv(o);S.cash+=v;o.myCost=0;Object.assign(o,{o:null,on:null,st:0,h:0});paint(o);if(db)db.doc("plots/p"+i).set({i,o:null,on:null,st:0,h:0}).catch(()=>{});toast("Sold "+o.n+" for "+f(v))}
+/* ---------- rent when you step onto another player's property ---------- */
+const wasIn={},lastRent={};
+function rentCheck(){if(S.over||S.menu==="cc"||S.jail)return;PL.forEach((p,k)=>{const inside=Math.abs(pl.position.x-p.x)<11&&Math.abs(pl.position.z-p.z)<11,was=wasIn[k];wasIn[k]=inside;
+ if(!inside||was||!p.o||p.o===myId)return;if(lastRent[k]>performance.now()-120000)return;lastRent[k]=performance.now();
+ const fee=Math.max(200,Math.round(p.p*(p.b?.02:.015+.01*(p.h||0)))),pay=Math.min(fee,Math.max(0,Math.round(S.cash)));if(pay<=0)return;
+ S.cash-=pay;if(room)room.emit("pay",{to:p.o,a:pay,n:"Rent",who:myName,w:p.n});banner("💸","You landed on "+p.n,"Rent "+f(pay)+" paid to "+(p.on||"the owner"))})}
+const clk=()=>{const h=hr();return String(h|0).padStart(2,"0")+":"+String((h%1)*60|0).padStart(2,"0")};
+/* ---------- bus stops ---------- */
+[["Oshodi","V",15,30],["Yaba","V",-15,-30],["Ikeja","V",45,0],["Mushin","V",-45,60],["Apapa","V",15,-60],["Lekki","V",75,30],["Ajah","V",-75,-30],["CMS","H",45,-30],["Berger","H",-15,60],["Festac","H",45,0],["Ikorodu","H",-45,60],["Surulere","H",-15,-60]].forEach(a=>{
+ const V=a[1]=="V",s={n:a[0],x:V?a[2]-3:a[3],z:V?a[3]:a[2]-3,cx:V?a[2]-6.5:a[3],cz:V?a[3]:a[2]-6.5};s.wx=V?s.cx+2.4:s.cx;s.wz=V?s.cz:s.cz+2.4;STOPS.push(s);
+ const g=new THREE.Group(),m=c=>new THREE.MeshLambertMaterial({color:c}),B=(w,h,d,c,x,y,z)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),c.isMaterial?c:m(c));q.position.set(x,y,z);g.add(q)};
+ B(3.8,.12,1.8,0x2c3e50,0,2.4,0);B(.1,2.4,.1,0x444444,-1.8,1.2,.7);B(.1,2.4,.1,0x444444,1.8,1.2,.7);B(.1,2.4,.1,0x444444,-1.8,1.2,-.7);B(.1,2.4,.1,0x444444,1.8,1.2,-.7);
+ B(3.6,1.5,.06,new THREE.MeshLambertMaterial({color:0x8fb5d0,transparent:true,opacity:.5}),0,1.5,-.8);B(3,.1,.5,0xf2b705,0,.55,-.45);B(.08,3.4,.08,0x444444,2.1,1.7,.9);
+ g.position.set(s.cx,.2,s.cz);g.rotation.y=V?Math.PI/2:0;sc.add(g);const sg=sign("BUS STOP|"+s.n,s.cx+(V?.9:2.1),3.7,s.cz+(V?2.1:.9),.45);
+ col.push(V?[s.cx,s.cz,.9,1.9]:[s.cx,s.cz,1.9,.9])});
+/* ---------- okada ---------- */
+function mkOkada(pax){const g=new THREE.Group(),M=c=>new THREE.MeshLambertMaterial({color:c}),B=(w,h,d,c,x,y,z)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c));q.position.set(x,y,z);g.add(q)};
+ const cl=[0xc0392b,0x111111,0xf2b705,0x2c3e50][Math.random()*4|0];
+ B(1.5,.3,.3,cl,0,.6,0);B(.6,.18,.34,0x222222,-.35,.85,0);B(.4,.5,.3,cl,.55,.8,0);B(.12,.12,.9,0x333333,.62,1.05,0);B(.25,.2,.25,0xfff2b0,.82,.8,0);
+ [-.7,.7].forEach(x=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(.38,.38,.14,12),M(0x1a1a1a));w.rotation.x=Math.PI/2;w.position.set(x,.38,0);g.add(w)});
+ const rider=(shirt,lx,ax,px)=>{const p=person(shirt,SK[Math.random()*5|0],0x111111,0x2b3a55);p.P.l.rotation.x=lx;p.P.r.rotation.x=lx;p.P.la.rotation.x=ax;p.P.ra.rotation.x=ax;p.g.rotation.y=Math.PI/2;p.g.scale.setScalar(.9);p.g.position.set(px,.06,0);g.add(p.g)};
+ rider([0xf39c12,0x2980b9,0x16a085,0xc0392b][Math.random()*4|0],-1.25,-1,-.05);if(pax)rider(0x7f8c8d,-1.25,-.2,-.65);return g}
+const ov=mkOkada(false);ov.visible=false;sc.add(ov);
+const pok=[[-6,-4],[-6,4],[19.5,-21.5]].map(p=>{const e={g:mkOkada(false),hz:true,ln:p[1],t:p[0],sp:0,d:1,ra:0,okada:1};e.g.position.set(p[0],0,p[1]);sc.add(e.g);danfos.push(e);return e});
+for(let n=0;n<6;n++){const e={g:mkOkada(n%3==0),sp:13+Math.random()*4,ph:Math.random()*6,wf:.6+Math.random()*.5};sc.add(e.g);toLoop(e,n*3+2);okadas.push(e)}
+const SAY=["Oga comot for road!","Abeg park well!","You wan die?","Wahala dey!","Face front, my friend!","Na your papa road?"];
+let lt3=performance.now(),lastSay=0;
+(function orr(now){requestAnimationFrame(orr);const dt=Math.min(.05,(now-lt3)/1000);lt3=now;const t=now/1000;
+ okadas.forEach(d=>{const p=lpos(d);let tgt=d.cruise,near=1e9;const chk=(x,z)=>{const ox=x-p.x,oz=z-p.z,dist=Math.hypot(ox,oz);if(dist<6&&dist>.01&&(ox*p.hx+oz*p.hz)/dist>.9&&dist<near)near=dist};
+  for(const o of danfos)if(!o.out)chk(o.g.position.x,o.g.position.z);for(const o of cops)chk(o.g.position.x,o.g.position.z);if(S.drv)chk(S.drv.x,S.drv.z);
+  if(near<3.2)tgt=0;else if(near<5)tgt=d.cruise*.6;d.v+=(tgt-d.v)*Math.min(1,dt*(tgt<d.v?8:2.5));
+  d.u+=d.dir*d.v*dt;const q=lpos(d),w=Math.sin(t*d.wf+d.ph)*3.2;d.g.position.set(q.x-q.hz*w,0,q.z+q.hx*w);
+  const th=Math.atan2(-q.hz,q.hx)+Math.cos(t*d.wf+d.ph)*.3;let df=th-d.ra;df=Math.atan2(Math.sin(df),Math.cos(df));d.ra+=df*Math.min(1,dt*8);d.g.rotation.y=d.ra});
+ if(!S.drv&&!S.over&&!S.menu&&performance.now()>inv)okadas.some(d=>{if(d.v<3)return false;const th=d.g.rotation.y,dx=pl.position.x-d.g.position.x,dz=pl.position.z-d.g.position.z,lx=dx*Math.cos(th)-dz*Math.sin(th),lz=dx*Math.sin(th)+dz*Math.cos(th);if(Math.abs(lx)<1.5&&Math.abs(lz)<.9){hit.by="An okada";hit();hit.by=0;return true}return false});
+ if(!S.menu&&!S.over&&now-lastSay>8000){const o=okadas.find(d=>d.v>8&&Math.hypot(d.g.position.x-pl.position.x,d.g.position.z-pl.position.z)<9);if(o){lastSay=now;toast("Okada rider: \""+SAY[Math.random()*SAY.length|0]+"\"")}}
+})(lt3);
+const _m5=menuOf;menuOf=function(o){if(o.k=="danfo"){const m=_m5(o);m.a.splice(1,0,["Ride an okada (₦700 remittance per day)",()=>{const e=pok.find(x=>!x.out);if(!e)return toast("All okadas are out");startDrive(e)}]);return m}return _m5(o)};
+(function rl(){requestAnimationFrame(rl);Object.values(rem).forEach(a=>{a.g.position.x+=(a.tx-a.g.position.x)*.2;a.g.position.z+=(a.tz-a.g.position.z)*.2;a.g.rotation.y=a.r});})();
+
+</script></body></html>
